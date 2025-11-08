@@ -1,19 +1,4 @@
-### 🧠 Concept
-
-Normally, when you run `git init`, Git creates a `.git` folder **inside** the current directory to store all versioning data.
-
-But in this setup, we tell Git to:
-
-* Store its **metadata** in `~/.dotfiles`
-* Treat your **home directory (`~`)** as the **working tree**
-
-So your files like `~/.bashrc`, `~/.zshrc`, and `~/.config/nvim/init.lua` stay in their usual places — **no duplication, no clutter** — but Git tracks them using the hidden `.dotfiles` repo.
-
----
-
-### 🧰 Setup Recap
-
-Here’s the minimal setup again:
+### 🧰 Setup
 
 ```bash
 # 1. Create a bare repo to store version control info
