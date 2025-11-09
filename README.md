@@ -15,7 +15,7 @@ Now you can use the alias `dotfiles` like a normal git command:
 dotfiles status
 dotfiles add .bashrc .zshrc .config/nvim
 dotfiles commit -m "Initial commit"
-dotfiles remote add origin git@github.com:yourusername/dotfiles.git
+dotfiles remote add origin https://github.com/xiliumz/dotfiles.git
 dotfiles push -u origin main
 ```
 
@@ -36,7 +36,7 @@ dotfiles config --local status.showUntrackedFiles no
 You can restore your setup by doing:
 
 ```bash
-git clone --bare git@github.com:yourusername/dotfiles.git $HOME/.dotfiles
+git clone --bare https://github.com/xiliumz/dotfiles.git $HOME/.dotfiles
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 dotfiles checkout
 dotfiles config --local status.showUntrackedFiles no
