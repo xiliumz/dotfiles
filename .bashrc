@@ -76,9 +76,9 @@ git_status_hint() {
 }
 
 if [ "$color_prompt" = yes ]; then
-  PS1='\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(branch=$(parse_git_branch); if [ -n "$branch" ]; then hint=$(git_status_hint); echo " \[\033[1;38;5;208m\]($branch$hint)\[\033[00m\]"; fi) '
+  PS1='\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(branch=$(parse_git_branch); if [ -n "$branch" ]; then hint=$(git_status_hint); echo " \[\033[1;38;5;208m\]($branch$hint)\[\033[00m\]"; fi)\n\$ '
 else
-  PS1='\u:\w$(branch=$(parse_git_branch); if [ -n "$branch" ]; then hint=$(git_status_hint); echo " ($branch$hint)"; fi) '
+  PS1='\u:\w$(branch=$(parse_git_branch); if [ -n "$branch" ]; then hint=$(git_status_hint); echo " ($branch$hint)"; fi)\n\$ '
 fi
 unset color_prompt force_color_prompt
 
