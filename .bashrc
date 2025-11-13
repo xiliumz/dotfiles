@@ -140,3 +140,17 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+# Additional dot aliases
+alias dst='dot status'
+alias dps='dot push'
+alias dpl='dot pull'
+
+alias da='dot add'
+alias dcm='dot commit -m'
+
+# Enable Git completion for the alias
+if [ -f /usr/share/bash-completion/completions/git ]; then
+  source /usr/share/bash-completion/completions/git
+  __git_complete dot __git_main
+fi
