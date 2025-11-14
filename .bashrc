@@ -143,7 +143,7 @@ alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 # Additional dot aliases
 alias dst='dot status'
-alias dps='dot push'
+alias dph='dot push'
 alias dpl='dot pull'
 
 alias da='dot add'
