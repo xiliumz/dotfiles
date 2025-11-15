@@ -154,3 +154,9 @@ if [ -f /usr/share/bash-completion/completions/git ]; then
   source /usr/share/bash-completion/completions/git
   __git_complete dot __git_main
 fi
+
+# Git Aliases
+alias gph='git push'
+alias gpl='git pull'
+alias gf='git fetch'
+
