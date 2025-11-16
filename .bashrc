@@ -156,7 +156,9 @@ if [ -f /usr/share/bash-completion/completions/git ]; then
 fi
 
 # Git Aliases
+alias gst='git status'
 alias gph='git push'
 alias gpl='git pull'
+alias ga='git add'
 alias gf='git fetch'
 
