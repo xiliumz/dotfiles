@@ -162,3 +162,6 @@ alias gpl='git pull'
 alias ga='git add'
 alias gf='git fetch'
 
+# Navigate to nvim config
+alias cdnvim='cd ~/.config/nvim'
+
