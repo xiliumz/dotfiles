@@ -164,4 +164,5 @@ alias gf='git fetch'
 
 # Navigate to nvim config
 alias cdnvim='cd ~/.config/nvim'
-
+# Navigate to opencode config
+alias cdopencode='cd ~/.config/opencode'
