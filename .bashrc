@@ -141,6 +141,8 @@ export NVM_DIR="$HOME/.nvm"
 
 alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
+export EDITOR=nvim
+
 # Additional dot aliases
 alias dst='dot status'
 alias dph='dot push'
