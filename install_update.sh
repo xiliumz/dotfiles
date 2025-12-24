@@ -11,17 +11,12 @@ NC='\033[0m' # No Color
 
 echo -e "${YELLOW}Starting installation/update of Neovim, Kitty, and OpenCode...${NC}"
 
-# Function to check if command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
 # Temporary directory for downloads
 TMP_DIR="$(mktemp -d)"
 cd "$TMP_DIR" || exit 1
 
 # ──────────────────────────────────────────────────────────────────────────────
-# 1. Neovim (latest stable)
+# 1. Neovim (latest stable) -> https://neovim.io/doc/install/#:~:text=Linux-,Pre%2Dbuilt%20archives,-The%20Releases%20page
 # ──────────────────────────────────────────────────────────────────────────────
 echo -e "\n${YELLOW}Updating Neovim...${NC}"
 
@@ -33,51 +28,44 @@ sudo ln -sf /opt/nvim/bin/nvim /usr/local/bin/nvim
 echo -e "${GREEN}Neovim updated:${NC} $(nvim --version | head -n 1)"
 
 # ──────────────────────────────────────────────────────────────────────────────
-# 2. Kitty terminal (latest release)
+# 2. Kitty terminal (latest release) - System-wide in /opt
 # ──────────────────────────────────────────────────────────────────────────────
-echo -e "\n${YELLOW}Updating Kitty terminal...${NC}"
+echo -e "\n${YELLOW}Installing Kitty terminal to /opt...${NC}"
 
-# Download latest Kitty binary (official installer script)
-curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
+# Download and install to /opt
+sudo curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin dest=/opt
 
-# The installer places it in ~/.local/kitty.app
-# Create symlink if not already present
+# Create symlinks
 if [[ ! -L /usr/local/bin/kitty ]]; then
-    sudo ln -sf ~/.local/kitty.app/bin/kitty /usr/local/bin/kitty
+    sudo ln -sf /opt/kitty.app/bin/kitty /usr/local/bin/kitty
 fi
 
-echo -e "${GREEN}Kitty updated:${NC} $(kitty --version)"
+# Optional: Create desktop file symlink for application menu
+if [[ ! -L /usr/share/applications/kitty.desktop ]]; then
+    sudo mkdir -p /usr/share/applications
+    sudo ln -sf /opt/kitty.app/share/applications/kitty.desktop /usr/share/applications/
+fi
+
+echo -e "${GREEN}Kitty installed:${NC} $(kitty --version)"
 
 # ──────────────────────────────────────────────────────────────────────────────
-# 3. OpenCode (or VSCodium if you meant that)
+# 3. OpenCode AI (latest release) - System-wide in /opt
 # ──────────────────────────────────────────────────────────────────────────────
-# Note: OpenCode is less common. If you meant VSCodium (open-source VS Code),
-# uncomment the VSCodium block below and comment out the OpenCode one.
+echo -e "\n${YELLOW}Installing OpenCode AI to /opt...${NC}"
 
-echo -e "\n${YELLOW}Updating OpenCode (if you meant VSCodium, see comment)...${NC}"
+# Download the latest OpenCode binary for Linux x86_64
+curl -s https://api.github.com/repos/sst/opencode/releases/latest \
+    | grep "browser_download_url.*linux.*x86_64" \
+    | cut -d'"' -f4 \
+    | xargs curl -L -o opencode
 
-# Option A: OpenCode (if that's what you want)
-# (Note: OpenCode is not as widely used; adjust if wrong project)
-# if [[ ! -d /opt/opencode ]]; then
-#     echo "OpenCode not found in /opt. Skipping update (manual install required)."
-# else
-#     echo "OpenCode found. Updating not supported automatically yet."
-# fi
+# Install to /opt
+chmod +x opencode
+sudo mkdir -p /opt/opencode
+sudo mv opencode /opt/opencode/
+sudo ln -sf /opt/opencode/opencode /usr/local/bin/opencode
 
-# Option B: VSCodium (recommended if you meant a VS Code fork)
-echo -e "Installing/updating VSCodium (open-source VS Code)...${NC}"
-
-VSCODIUM_TAR="VSCodium-linux-x64.tar.gz"
-curl -LO https://github.com/VSCodium/vscodium/releases/latest/download/${VSCODIUM_TAR}
-sudo rm -rf /opt/vscodium
-sudo tar -C /opt -xzf "${VSCODIUM_TAR}" --transform 's|^VSCodium-linux-x64|vscodium|'
-sudo ln -sf /opt/vscodium/bin/codium /usr/local/bin/codium
-
-echo -e "${GREEN}VSCodium updated:${NC} $(codium --version | head -n 1)"
-
-# Clean up
-rm -rf "$TMP_DIR"
-
+echo -e "${GREEN}OpenCode AI installed${NC}"
 # ──────────────────────────────────────────────────────────────────────────────
 # Final summary
 # ──────────────────────────────────────────────────────────────────────────────
@@ -85,7 +73,6 @@ echo -e "\n${GREEN}Installation/update complete!${NC}"
 echo -e "Installed/updated versions:"
 nvim --version | head -n 1
 kitty --version
-codium --version | head -n 1
 
 echo -e "\n${YELLOW}Tip:${NC} Run this script anytime to update to the latest versions."
 echo -e "You can now use: nvim, kitty, codium"
