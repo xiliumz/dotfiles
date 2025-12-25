@@ -145,7 +145,7 @@ export EDITOR=nvim
 
 # Additional dot aliases
 alias dst='dot status'
-alias dph='dot push'
+alias dps='dot push'
 alias dpl='dot pull'
 
 alias da='dot add'
@@ -159,7 +159,7 @@ fi
 
 # Git Aliases
 alias gst='git status'
-alias gph='git push'
+alias gps='git push'
 alias gpl='git pull'
 alias ga='git add'
 alias gf='git fetch'
