@@ -32,19 +32,15 @@ echo -e "${GREEN}Neovim updated:${NC} $(nvim --version | head -n 1)"
 # ──────────────────────────────────────────────────────────────────────────────
 echo -e "\n${YELLOW}Installing Kitty terminal to /opt...${NC}"
 
-# Download and install to /opt
-sudo curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin dest=/opt
+VERSION=$(curl -s https://sw.kovidgoyal.net/kitty/current-version.txt)
 
-# Create symlinks
-if [[ ! -L /usr/local/bin/kitty ]]; then
-    sudo ln -sf /opt/kitty.app/bin/kitty /usr/local/bin/kitty
-fi
-
-# Optional: Create desktop file symlink for application menu
-if [[ ! -L /usr/share/applications/kitty.desktop ]]; then
-    sudo mkdir -p /usr/share/applications
-    sudo ln -sf /opt/kitty.app/share/applications/kitty.desktop /usr/share/applications/
-fi
+curl -LO "https://github.com/kovidgoyal/kitty/releases/download/v${VERSION}/kitty-${VERSION}-${KITTY_ARCH}.txz"
+sudo rm -rf /opt/kitty.app
+sudo mkdir -p /opt/kitty.app
+sudo tar -xJf "kitty-${VERSION}-${KITTY_ARCH}.txz" -C /opt/kitty.app
+sudo ln -sf /opt/kitty.app/bin/kitty /usr/local/bin/kitty
+sudo mkdir -p /usr/share/applications
+sudo ln -sf /opt/kitty.app/share/applications/kitty.desktop /usr/share/applications/kitty.desktop
 
 echo -e "${GREEN}Kitty installed:${NC} $(kitty --version)"
 
