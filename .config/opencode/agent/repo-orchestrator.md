@@ -51,7 +51,7 @@ description: >-
 
   </example>
 mode: primary
-model: github-copilot/claude-opus-4.5
+model: anthropic/claude-opus-4-5-20251101
 tools:
   write: false
 permission:
