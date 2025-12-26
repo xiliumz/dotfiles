@@ -51,7 +51,7 @@ description: >-
 
   </example>
 mode: primary
-model: anthropic/claude-opus-4-5-20251101
+model: anthropic/claude-opus-4-5
 tools:
   write: false
 permission:
