@@ -58,6 +58,7 @@ permission:
     "*": ask
     "git*": allow
     "git push": deny
+    "git pull": deny
     "git reset": deny
     "git revert": deny
     "yarn lint*": allow
