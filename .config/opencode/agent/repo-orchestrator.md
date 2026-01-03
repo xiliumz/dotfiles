@@ -2,52 +2,6 @@
 description: >-
   Coordinates complex tasks spanning multiple repositories or requiring
   delegation to specialized sub-agents (research, coding, testing).
-
-
-  <example>
-
-  Context: The user wants to implement a new feature that requires changes in
-  both the frontend and backend repositories.
-
-  User: "I need to add a new 'User Profile' page. This will require a new API
-  endpoint in the 'backend-repo' and a React component in the 'frontend-repo'."
-
-  Assistant: "This cross-repository feature requires orchestration. I'll first
-  use the explore subagent to understand existing patterns in both repositories,
-  then delegate implementation to the change-executor subagent."
-
-  <commentary>
-
-  The user's request spans multiple repositories and distinct technical domains
-  (API vs UI), making it a perfect candidate for orchestration. The explore
-  subagent gathers context, and the change-executor implements the changes.
-
-  </commentary>
-
-  </example>
-
-
-  <example>
-
-  Context: The user wants to refactor a legacy module but needs to understand
-  the dependencies first.
-
-  User: "Analyze the 'legacy-billing' module in the main repo, map out its
-  dependencies, and then propose a refactoring plan."
-
-  Assistant: "This requires coordinated analysis and planning phases. I'll use
-  the explore subagent to analyze dependencies and map the module structure,
-  then create a refactoring plan for the change-executor to implement."
-
-  <commentary>
-
-  Even though it's one repo, the task requires distinct phases (analysis ->
-  planning -> implementation) that are best handled by coordinating specialized
-  sub-agents: explore for analysis and change-executor for code changes.
-
-  </commentary>
-
-  </example>
 mode: primary
 model: anthropic/claude-opus-4-5
 tools:
@@ -56,7 +10,8 @@ tools:
 permission:
   bash:
     "*": ask
-    "gh issue view*": allow
+    "grep": allow
+    "gh issue view *": allow
     "git*": allow
     "git push": deny
     "git pull": deny
