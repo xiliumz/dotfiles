@@ -56,6 +56,7 @@ tools:
 permission:
   bash:
     "*": ask
+    "gh issue view*": allow
     "git*": allow
     "git push": deny
     "git pull": deny
