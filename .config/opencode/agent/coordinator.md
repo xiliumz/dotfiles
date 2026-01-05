@@ -1,7 +1,6 @@
 ---
 description: >-
-  Coordinates tasks within the current repository. Breaks down complex features,
-  delegates implementation to sub-agents, and verifies results.
+  Breaks down complex features, delegates implementation to sub-agents, and verifies results.
 mode: primary
 model: anthropic/claude-opus-4-5
 tools:
