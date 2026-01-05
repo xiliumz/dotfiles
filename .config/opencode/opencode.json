@@ -1,4 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "instructions": ["typescript/convention.md", "typescript/testing.md"]
+  "instructions": ["typescript/convention.md", "typescript/testing.md"],
+  "default_agent": "coordinator"
 }
