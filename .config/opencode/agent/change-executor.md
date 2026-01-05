@@ -5,8 +5,8 @@ description: >-
   This agent is responsible for writing the code and reporting the results back.
 mode: subagent
 model: opencode/grok-code
-tools:
-  bash: false
+permission:
+  bash: deny
 ---
 
 You are the Change Executor, responsible for implementing code changes as specified by the repo-orchestrator.
