@@ -152,7 +152,7 @@ fi
 
 # 4. OpenCode
 echo -e "\n${YELLOW}Checking OpenCode...${NC}"
-LATEST_OPENCODE_TAG=$(get_release_version "https://api.github.com/repos/sst/opencode/releases/latest")
+LATEST_OPENCODE_TAG=$(get_release_version "https://api.github.com/repos/anomalyco/opencode/releases/latest")
 LATEST_OPENCODE="${LATEST_OPENCODE_TAG#v}"
 echo "Latest OpenCode version: $LATEST_OPENCODE"
 if command -v opencode >/dev/null 2>&1; then
