@@ -76,3 +76,52 @@ export function processData(items: Item[]) {
   return items.map(item => validateAndTransform(item));
 }
 ```
+
+## Mocking
+
+- **Spy Declaration**: Declare spy variables at the describe level using `jest.SpyInstance` type
+- **Setup**: Always call `jest.clearAllMocks()` first in beforeEach, then initialize spies with `jest.spyOn()`
+- **Cleanup**: Restore all spies using `.mockRestore()` in afterEach
+- **Module-Level Mocks**: Use `jest.mock()` at the top of the file for external dependencies
+- **Test-Level Mocks**: Set behavior in the section of each test using `.mockImplementation()`, `.mockReturnValue()`, `.mockResolvedValue()`, etc.
+
+### Complete Mocking Example
+
+```typescript
+import * as someModule from '../../src/some-module'
+import { someFunction } from 'external-library'
+
+jest.mock('../../src/logger')
+jest.mock('external-library')
+
+describe('myModule', () => {
+  let moduleDefaultSpy: jest.SpyInstance
+  let loggerSpy: jest.SpyInstance
+  const mockSomeFunction = someFunction as jest.Mock
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    moduleDefaultSpy = jest.spyOn(someModule, 'default')
+    loggerSpy = jest.spyOn(logger, 'info')
+  })
+
+  afterEach(() => {
+    moduleDefaultSpy.mockRestore()
+    loggerSpy.mockRestore()
+  })
+
+  it('should process data and log results', async () => {
+    // Prepare
+    moduleDefaultSpy.mockImplementation(() => 'processed')
+    loggerSpy.mockImplementation(() => Promise.resolve(undefined))
+    mockSomeFunction.mockImplementation(() => 'external-result')
+
+    // Execute
+    const result = await myFunction()
+
+    // Assert
+    expect(result).toBe('expected')
+    expect(loggerSpy).toHaveBeenCalledWith('data processed')
+  })
+})
+```
