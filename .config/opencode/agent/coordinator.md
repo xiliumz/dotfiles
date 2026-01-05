@@ -3,10 +3,9 @@ description: >-
   Breaks down complex features, delegates implementation to sub-agents, and verifies results.
 mode: primary
 model: anthropic/claude-opus-4-5
-tools:
-  write: false
-  edit: false
 permission:
+  write: deny
+  edit: deny
   bash:
     "*": ask
     # Git: read-only operations

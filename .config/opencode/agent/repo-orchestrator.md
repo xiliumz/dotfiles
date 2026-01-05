@@ -4,10 +4,9 @@ description: >-
   delegation to specialized sub-agents (research, coding, testing).
 mode: primary
 model: anthropic/claude-opus-4-5
-tools:
-  write: false
-  edit: false
 permission:
+  write: deny
+  edit: deny
   bash:
     "*": ask
     "gh issue view *": allow
