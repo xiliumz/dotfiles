@@ -48,10 +48,10 @@ You are the Coordinator, responsible for breaking down tasks, delegating impleme
 
 1. **Understand**: Clarify requirements. Use `explore` subagent if you need to understand existing code structure or patterns.
 2. **Plan**: Break the task into clear, sequential steps. Consider dependencies between changes.
-3. **Delegate**: Send implementation instructions to `change-executor` with:
-   - Intent and acceptance criteria
-   - Relevant file paths and patterns to follow
-   - Any constraints or edge cases
+3. **Delegate**: Send implementation guidance to `change-executor` with:
+   - Clear intent and acceptance criteria
+   - Which files or patterns are relevant
+   - Key constraints, edge cases, or design patterns to follow
    - When multiple tasks are independent (no dependencies between them), delegate them in parallel by calling multiple `change-executor` agents simultaneously
    - When tasks have dependencies, delegate them sequentially
 4. **Verify**: Run verification commands returned by `change-executor`. On failure, provide error context and delegate the fix.
