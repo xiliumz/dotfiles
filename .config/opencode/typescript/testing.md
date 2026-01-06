@@ -79,42 +79,54 @@ export function processData(items: Item[]) {
 
 ## Mocking
 
-- **Spy Declaration**: Declare spy variables at the describe level using `jest.SpyInstance` type
-- **Setup**: Always call `jest.clearAllMocks()` first in beforeEach, then initialize spies with `jest.spyOn()`
-- **Cleanup**: Restore all spies using `.mockRestore()` in afterEach
-- **Module-Level Mocks**: Use `jest.mock()` at the top of the file for external dependencies
-- **Test-Level Mocks**: Set behavior in the section of each test using `.mockImplementation()`, `.mockReturnValue()`, `.mockResolvedValue()`, etc.
+### Best Practices
 
-### Complete Mocking Example
+- **Spy Declaration**: Declare spy variables at the describe level using `jest.SpyInstance` type
+- **Setup**: Initialize spies with `jest.spyOn()` in `beforeEach`
+- **Cleanup**: Use `jest.restoreAllMocks()` in `afterEach` to restore all spies (only when spies are created in `beforeEach`)
+- **Module-Level Mocks**: Use `jest.mock()` at the top of the file for external dependencies
+- **Test-Level Mocks**: Set behavior in each test using `.mockImplementation()`, `.mockReturnValue()`, `.mockResolvedValue()`, etc.
+
+### When to Use `clearAllMocks()` and `restoreAllMocks()`
+
+| Scenario | `beforeEach` | `afterEach` |
+|----------|--------------|-------------|
+| Has `jest.mock()` + `jest.spyOn()` in `beforeEach` | `jest.clearAllMocks()` | `jest.restoreAllMocks()` |
+| Has `jest.mock()` only (spies created inside tests) | `jest.clearAllMocks()` | Not needed |
+| Has `jest.spyOn()` in `beforeEach` only (no `jest.mock()`) | Not needed | `jest.restoreAllMocks()` |
+
+**Why?**
+- `jest.clearAllMocks()` - Clears call history for all mocks. Needed for `jest.mock()` because module-level mocks persist across tests.
+- `jest.restoreAllMocks()` - Restores spies to original implementations. Only needed when `jest.spyOn()` is used in `beforeEach`.
+
+**Key insight**: Only add what you actually need based on your mocking setup.
+
+### Example 1: With `jest.mock()` and `jest.spyOn()` in `beforeEach`
 
 ```typescript
 import * as someModule from '../../src/some-module'
-import { someFunction } from 'external-library'
+import logger from '../../src/logger'
 
 jest.mock('../../src/logger')
-jest.mock('external-library')
 
 describe('myModule', () => {
   let moduleDefaultSpy: jest.SpyInstance
   let loggerSpy: jest.SpyInstance
-  const mockSomeFunction = someFunction as jest.Mock
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.clearAllMocks() // Required: jest.mock() at module level
     moduleDefaultSpy = jest.spyOn(someModule, 'default')
     loggerSpy = jest.spyOn(logger, 'info')
   })
 
   afterEach(() => {
-    moduleDefaultSpy.mockRestore()
-    loggerSpy.mockRestore()
+    jest.restoreAllMocks() // Required: spies created in beforeEach
   })
 
   it('should process data and log results', async () => {
     // Prepare
     moduleDefaultSpy.mockImplementation(() => 'processed')
-    loggerSpy.mockImplementation(() => Promise.resolve(undefined))
-    mockSomeFunction.mockImplementation(() => 'external-result')
+    loggerSpy.mockImplementation(() => undefined)
 
     // Execute
     const result = await myFunction()
@@ -122,6 +134,56 @@ describe('myModule', () => {
     // Assert
     expect(result).toBe('expected')
     expect(loggerSpy).toHaveBeenCalledWith('data processed')
+  })
+})
+```
+
+### Example 2: With `jest.mock()` Only (spies inside tests)
+
+```typescript
+import * as Sentry from '@sentry/node'
+import logger from '../../src/logger'
+
+jest.mock('../../src/logger')
+jest.mock('@sentry/node')
+
+describe('myModule', () => {
+  beforeEach(() => {
+    jest.clearAllMocks() // Required: jest.mock() at module level
+  })
+
+  // No afterEach needed - no spies in beforeEach
+
+  it('should log errors', async () => {
+    const loggerErrorSpy = jest.spyOn(logger, 'error')
+
+    await myFunction()
+
+    expect(loggerErrorSpy).toHaveBeenCalledWith('error message')
+  })
+})
+```
+
+### Example 3: With `jest.spyOn()` Only (no `jest.mock()`)
+
+```typescript
+import * as someModule from '../../src/some-module'
+
+describe('myModule', () => {
+  let moduleDefaultSpy: jest.SpyInstance
+
+  beforeEach(() => {
+    // No jest.clearAllMocks() needed - no jest.mock() at module level
+    moduleDefaultSpy = jest.spyOn(someModule, 'default')
+  })
+
+  afterEach(() => {
+    jest.restoreAllMocks() // Required: spies created in beforeEach
+  })
+
+  it('should work', () => {
+    moduleDefaultSpy.mockReturnValue('mocked')
+    // ...
   })
 })
 ```
