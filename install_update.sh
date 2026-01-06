@@ -27,6 +27,39 @@ check_json_parser() {
   fi
 }
 
+install_or_update() {
+  local name="$1"
+  local current_version="$2"
+  local latest_version="$3"
+  local download_url="$4"
+  local archive_file="$5"
+  local install_path="$6"
+  local binary_path="$7"
+  local archive_type="${8:-.tar.gz}"
+
+  if [[ "$current_version" == "$latest_version" ]]; then
+    echo -e "${GREEN}$name already up to date:${NC} $current_version"
+    return
+  fi
+
+  echo -e "${YELLOW}Updating $name to $latest_version...${NC}"
+  echo "Downloading $archive_file"
+  curl -LO "$download_url"
+  echo "Removing old $install_path"
+  sudo rm -rf "$install_path"
+
+  echo "Extracting to $install_path"
+  if [[ "$archive_type" == ".txz" ]]; then
+    sudo tar -C /opt -xJf "$archive_file" --strip-components=1
+  else
+    sudo tar -C /opt -xzf "$archive_file" --strip-components=1
+  fi
+
+  echo "Linking $binary_path"
+  sudo ln -sf "$install_path/bin/$(basename $binary_path)" "$binary_path"
+  echo -e "${GREEN}$name updated:${NC} $latest_version"
+}
+
 get_release_version() {
   local api_url="$1"
   if command -v jq >/dev/null 2>&1; then
@@ -74,20 +107,12 @@ else
     echo "Neovim: not installed"
 fi
 
-if [[ "$CURRENT_NVIM" != "$LATEST_NVIM" ]]; then
-    echo -e "${YELLOW}Updating Neovim to $LATEST_NVIM...${NC}"
-    echo "Downloading nvim-linux-${NVIM_ARCH}.tar.gz"
-    curl -LO "https://github.com/neovim/neovim/releases/download/${LATEST_NVIM}/nvim-linux-${NVIM_ARCH}.tar.gz"
-    echo "Removing old /opt/nvim"
-    sudo rm -rf /opt/nvim
-    echo "Extracting to /opt/nvim"
-    sudo tar -C /opt -xzf "nvim-linux-${NVIM_ARCH}.tar.gz" --strip-components=1
-    echo "Linking /usr/local/bin/nvim"
-    sudo ln -sf /opt/nvim/bin/nvim /usr/local/bin/nvim
-    echo -e "${GREEN}Neovim updated:${NC} $(nvim --version | head -n1)"
-else
-    echo -e "${GREEN}Neovim already up to date:${NC} $CURRENT_NVIM"
-fi
+install_or_update "Neovim" "$CURRENT_NVIM" "$LATEST_NVIM" \
+    "https://github.com/neovim/neovim/releases/download/${LATEST_NVIM}/nvim-linux-${NVIM_ARCH}.tar.gz" \
+    "nvim-linux-${NVIM_ARCH}.tar.gz" \
+    "/opt/nvim" \
+    "/usr/local/bin/nvim" \
+    ".tar.gz"
 
 # 2. Kitty
 echo -e "\n${YELLOW}Checking Kitty...${NC}"
@@ -103,21 +128,15 @@ else
 fi
 
 if [[ "$CURRENT_KITTY" != "$LATEST_KITTY" ]]; then
-    echo -e "${YELLOW}Updating Kitty to $LATEST_KITTY...${NC}"
-    echo "Downloading kitty-${LATEST_KITTY}-${KITTY_ARCH}.txz"
-    curl -LO "https://github.com/kovidgoyal/kitty/releases/download/v${LATEST_KITTY}/kitty-${LATEST_KITTY}-${KITTY_ARCH}.txz"
-    echo "Removing old /opt/kitty.app"
-    sudo rm -rf /opt/kitty.app
-    echo "Creating /opt/kitty.app"
-    sudo mkdir -p /opt/kitty.app
-    echo "Extracting to /opt/kitty.app"
-    sudo tar -xJf "kitty-${LATEST_KITTY}-${KITTY_ARCH}.txz" -C /opt/kitty.app
-    echo "Linking /usr/local/bin/kitty"
-    sudo ln -sf /opt/kitty.app/bin/kitty /usr/local/bin/kitty
+    install_or_update "Kitty" "$CURRENT_KITTY" "$LATEST_KITTY" \
+        "https://github.com/kovidgoyal/kitty/releases/download/v${LATEST_KITTY}/kitty-${LATEST_KITTY}-${KITTY_ARCH}.txz" \
+        "kitty-${LATEST_KITTY}-${KITTY_ARCH}.txz" \
+        "/opt/kitty.app" \
+        "/usr/local/bin/kitty" \
+        ".txz"
     echo "Linking desktop file"
     sudo mkdir -p /usr/share/applications
     sudo ln -sf /opt/kitty.app/share/applications/kitty.desktop /usr/share/applications/kitty.desktop
-    echo -e "${GREEN}Kitty updated:${NC} $(kitty --version)"
 else
     echo -e "${GREEN}Kitty already up to date:${NC} $CURRENT_KITTY"
 fi
@@ -135,20 +154,12 @@ else
 fi
 
 TMUX_VERSION="${LATEST_TMUX#v}"
-if [[ "$CURRENT_TMUX" != "$LATEST_TMUX" ]]; then
-    echo -e "${YELLOW}Updating tmux to $LATEST_TMUX...${NC}"
-    echo "Downloading tmux-${TMUX_VERSION}-linux-${TMUX_ARCH}.tar.gz"
-    curl -LO "https://github.com/tmux/tmux-builds/releases/download/${LATEST_TMUX}/tmux-${TMUX_VERSION}-linux-${TMUX_ARCH}.tar.gz"
-    echo "Removing old /opt/tmux"
-    sudo rm -rf /opt/tmux
-    echo "Extracting to /opt/tmux"
-    sudo tar -C /opt -xzf "tmux-${TMUX_VERSION}-linux-${TMUX_ARCH}.tar.gz"
-    echo "Linking /usr/local/bin/tmux"
-    sudo ln -sf /opt/tmux/bin/tmux /usr/local/bin/tmux
-    echo -e "${GREEN}tmux updated:${NC} $(tmux --version)"
-else
-    echo -e "${GREEN}tmux already up to date:${NC} $CURRENT_TMUX"
-fi
+install_or_update "tmux" "$CURRENT_TMUX" "$LATEST_TMUX" \
+    "https://github.com/tmux/tmux-builds/releases/download/${LATEST_TMUX}/tmux-${TMUX_VERSION}-linux-${TMUX_ARCH}.tar.gz" \
+    "tmux-${TMUX_VERSION}-linux-${TMUX_ARCH}.tar.gz" \
+    "/opt/tmux" \
+    "/usr/local/bin/tmux" \
+    ".tar.gz"
 
 # 4. OpenCode
 echo -e "\n${YELLOW}Checking OpenCode...${NC}"
@@ -163,23 +174,12 @@ else
     echo "OpenCode: not installed"
 fi
 
-if [[ "$CURRENT_OPENCODE" != "$LATEST_OPENCODE" ]]; then
-    echo -e "${YELLOW}Updating OpenCode to $LATEST_OPENCODE...${NC}"
-    echo "Downloading opencode-linux-${OPCODE_ARCH}.tar.gz"
-    curl -LO "https://github.com/sst/opencode/releases/download/${LATEST_OPENCODE_TAG}/opencode-linux-${OPCODE_ARCH}.tar.gz"
-    echo "Extracting archive"
-    tar -xzf "opencode-linux-${OPCODE_ARCH}.tar.gz"
-    chmod +x opencode
-    echo "Creating /opt/opencode"
-    sudo mkdir -p /opt/opencode
-    echo "Moving binary to /opt/opencode"
-    sudo mv opencode /opt/opencode/
-    echo "Linking /usr/local/bin/opencode"
-    sudo ln -sf /opt/opencode/opencode /usr/local/bin/opencode
-    echo -e "${GREEN}OpenCode updated${NC}"
-else
-    echo -e "${GREEN}OpenCode already up to date:${NC} $CURRENT_OPENCODE"
-fi
+install_or_update "OpenCode" "$CURRENT_OPENCODE" "$LATEST_OPENCODE" \
+    "https://github.com/sst/opencode/releases/download/${LATEST_OPENCODE_TAG}/opencode-linux-${OPCODE_ARCH}.tar.gz" \
+    "opencode-linux-${OPCODE_ARCH}.tar.gz" \
+    "/opt/opencode" \
+    "/usr/local/bin/opencode" \
+    ".tar.gz"
 
 # Final summary
 echo -e "\n${GREEN}Installation/update complete!${NC}"
