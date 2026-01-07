@@ -6,6 +6,9 @@ model: anthropic/claude-opus-4-5
 permission:
   write: deny
   edit: deny
+  external_directory:
+    "*": ask
+    "~/.config/opencode/instruction/*": allow
   bash:
     "*": ask
     "gh issue view *": allow
