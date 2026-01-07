@@ -11,6 +11,8 @@ permission:
     "~/.config/opencode/instruction/*": allow
   bash:
     "*": ask
+    "gh pr view*": allow
+    "gh pr diff*": allow
     # Git: read-only operations
     "git status": allow
     "git log*": allow
