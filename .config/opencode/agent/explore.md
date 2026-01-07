@@ -6,6 +6,7 @@ model: opencode/grok-code
 permission:
   write: deny
   edit: deny
+  external_directory: ask
   bash:
     "*": deny
 ---
