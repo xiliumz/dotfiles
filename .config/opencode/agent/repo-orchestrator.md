@@ -5,7 +5,6 @@ mode: primary
 model: anthropic/claude-opus-4-5
 permission:
   write: deny
-  edit: deny
   external_directory:
     "*": ask
     "~/.config/opencode/instruction/*": allow
