@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Configuration
+
+INSTALLATION_DIR='/opt'
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -27,38 +31,7 @@ check_json_parser() {
   fi
 }
 
-install_or_update() {
-  local name="$1"
-  local current_version="$2"
-  local latest_version="$3"
-  local download_url="$4"
-  local archive_file="$5"
-  local install_path="$6"
-  local binary_path="$7"
-  local archive_type="${8:-.tar.gz}"
-
-  if [[ "$current_version" == "$latest_version" ]]; then
-    echo -e "${GREEN}$name already up to date:${NC} $current_version"
-    return
-  fi
-
-  echo -e "${YELLOW}Updating $name to $latest_version...${NC}"
-  echo "Downloading $archive_file"
-  curl -LO "$download_url"
-  echo "Removing old $install_path"
-  sudo rm -rf "$install_path"
-
-  echo "Extracting to $install_path"
-  if [[ "$archive_type" == ".txz" ]]; then
-    sudo tar -C /opt -xJf "$archive_file" --strip-components=1
-  else
-    sudo tar -C /opt -xzf "$archive_file" --strip-components=1
-  fi
-
-  echo "Linking $binary_path"
-  sudo ln -sf "$install_path/bin/$(basename $binary_path)" "$binary_path"
-  echo -e "${GREEN}$name updated:${NC} $latest_version"
-}
+check_json_parser
 
 get_release_version() {
   local api_url="$1"
@@ -69,7 +42,46 @@ get_release_version() {
   fi
 }
 
-echo -e "${YELLOW}Starting installation/update of Neovim, Kitty, and OpenCode...${NC}"
+extract_to_installation_dir() {
+  if [[ "$1" == "*.txz" ]]; then
+    sudo tar --no-same-owner -C "$INSTALLATION_DIR" -xJf "$archive_file"
+  else
+    sudo tar --no-same-owner -C "$INSTALLATION_DIR" -xzf "$archive_file"
+  fi
+}
+
+install_or_update() {
+  # Parameters
+  local name="$1"
+  local current_version="$2"
+  local latest_version="$3"
+  local download_url="$4"
+  local binary_path="$5" # Binary path after extraction
+
+  local archive_file="${download_url##*/}"
+  local install_path="${binary_path%%*/}" # Get where the binary path is stored. eg: kitty.app/kitty -> kitty.app
+
+  if [[ "$current_version" == "$latest_version" ]]; then
+    echo -e "${GREEN}$name already up to date:${NC} $current_version"
+    return
+  fi
+
+  echo -e "${YELLOW}Updating $name to $latest_version...${NC}"
+  echo "Downloading $download_url"
+  sudo curl -LO "$download_url"
+
+  echo "Removing old $install_path"
+  sudo rm -rf "$install_path"
+
+  echo "Extracting to $INSTALLATION_DIR"
+  extract_to_installation_dir "$archive_file"
+
+  echo "Linking $binary_path"
+  sudo ln -sf "$INSTALLATION_DIR/$install_path" "/usr/local/bin/"
+  echo -e "${GREEN}$name updated:${NC} $latest_version"
+}
+
+echo -e "${YELLOW}Starting installation/update...${NC}"
 
 TMP_DIR="$(mktemp -d)"
 echo "Created temporary directory: $TMP_DIR"
@@ -93,8 +105,6 @@ else
     exit 1
 fi
 
-check_json_parser
-
 # 1. Neovim
 echo -e "\n${YELLOW}Checking Neovim...${NC}"
 LATEST_NVIM=$(get_release_version "https://api.github.com/repos/neovim/neovim/releases/latest")
@@ -109,10 +119,7 @@ fi
 
 install_or_update "Neovim" "$CURRENT_NVIM" "$LATEST_NVIM" \
     "https://github.com/neovim/neovim/releases/download/${LATEST_NVIM}/nvim-linux-${NVIM_ARCH}.tar.gz" \
-    "nvim-linux-${NVIM_ARCH}.tar.gz" \
-    "/opt/nvim" \
-    "/usr/local/bin/nvim" \
-    ".tar.gz"
+    "nvim-linux-x86_64/bin/nvim"
 
 # 2. Kitty
 echo -e "\n${YELLOW}Checking Kitty...${NC}"
@@ -130,10 +137,7 @@ fi
 if [[ "$CURRENT_KITTY" != "$LATEST_KITTY" ]]; then
     install_or_update "Kitty" "$CURRENT_KITTY" "$LATEST_KITTY" \
         "https://github.com/kovidgoyal/kitty/releases/download/v${LATEST_KITTY}/kitty-${LATEST_KITTY}-${KITTY_ARCH}.txz" \
-        "kitty-${LATEST_KITTY}-${KITTY_ARCH}.txz" \
-        "/opt/kitty.app" \
-        "/usr/local/bin/kitty" \
-        ".txz"
+        "kitty.app/bin/kitty"
     echo "Linking desktop file"
     sudo mkdir -p /usr/share/applications
     sudo ln -sf /opt/kitty.app/share/applications/kitty.desktop /usr/share/applications/kitty.desktop
@@ -156,10 +160,7 @@ fi
 TMUX_VERSION="${LATEST_TMUX#v}"
 install_or_update "tmux" "$CURRENT_TMUX" "$LATEST_TMUX" \
     "https://github.com/tmux/tmux-builds/releases/download/${LATEST_TMUX}/tmux-${TMUX_VERSION}-linux-${TMUX_ARCH}.tar.gz" \
-    "tmux-${TMUX_VERSION}-linux-${TMUX_ARCH}.tar.gz" \
-    "/opt/tmux" \
-    "/usr/local/bin/tmux" \
-    ".tar.gz"
+    "tmux"
 
 # 4. OpenCode
 echo -e "\n${YELLOW}Checking OpenCode...${NC}"
@@ -175,11 +176,9 @@ else
 fi
 
 install_or_update "OpenCode" "$CURRENT_OPENCODE" "$LATEST_OPENCODE" \
-    "https://github.com/sst/opencode/releases/download/${LATEST_OPENCODE_TAG}/opencode-linux-${OPCODE_ARCH}.tar.gz" \
-    "opencode-linux-${OPCODE_ARCH}.tar.gz" \
-    "/opt/opencode" \
-    "/usr/local/bin/opencode" \
-    ".tar.gz"
+    "https://github.com/anomalyco/opencode/releases/download/${LATEST_OPENCODE_TAG}/opencode-linux-${OPCODE_ARCH}.tar.gz" \
+    "opencode"
+
 
 # Final summary
 echo -e "\n${GREEN}Installation/update complete!${NC}"
@@ -187,7 +186,7 @@ echo -e "Current versions:"
 nvim --version | head -n1 2>/dev/null || echo "Neovim: not installed"
 kitty --version 2>/dev/null || echo "Kitty: not installed"
 opencode --version 2>/dev/null || echo "OpenCode: not installed"
-tmux --version 2>/dev/null || echo "tmux: not installed"
+tmux -V 2>/dev/null || echo "tmux: not installed"
 
 echo -e "\n${YELLOW}Tip:${NC} Run this script anytime to update to the latest versions."
 echo -e "You can now use: nvim, kitty, tmux, opencode"
