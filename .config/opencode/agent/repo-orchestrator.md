@@ -10,6 +10,15 @@ permission:
     "~/.config/opencode/instruction/*": allow
   bash:
     "*": ask
+    # Safe read-only commands
+    "cat *": allow
+    "head *": allow
+    "tail *": allow
+    "less *": allow
+    "grep *": allow
+    "wc *": allow
+    "find *": allow
+    # Git: safe remote operation
     "gh issue view *": allow
     "gh pr view*": allow
     "gh pr diff*": allow
