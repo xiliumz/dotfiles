@@ -169,3 +169,4 @@ alias gb='git branch'
 alias cdnvim='cd ~/.config/nvim'
 # Navigate to opencode config
 alias cdopencode='cd ~/.config/opencode'
+alias oc='opencode'
