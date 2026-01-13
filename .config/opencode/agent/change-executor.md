@@ -4,7 +4,7 @@ description: >-
   implementation plan or set of changes that need to be applied to the codebase.
   This agent is responsible for writing the code and reporting the results back.
 mode: subagent
-model: opencode/grok-code
+model: anthropic/claude-haiku-4-5
 permission:
   bash: deny
 ---
@@ -35,5 +35,6 @@ You are the Change Executor, responsible for implementing code changes as specif
 ### Verification
 
 Since you cannot run commands directly, when verification is needed:
+
 - Output the exact command(s) the primary agent or user should run
 - Explain what the expected outcome should be
