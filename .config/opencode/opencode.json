@@ -3,6 +3,7 @@
   "instructions": ["./instruction/**/*.md"],
   "default_agent": "coordinator",
   "provider": {
+    "opencode": {},
     "openrouter": {
       "models": {
         "xiaomi/mimo-v2-flash:free": {},
