@@ -7,10 +7,12 @@ permission:
   write: deny
   external_directory:
     "*": ask
-    "~/.config/opencode/instruction/*": allow
+    "~/.config/opencode/instruction/**/*": allow
   bash:
     "*": ask
     # Safe read-only commands
+    "ls *": allow
+    "sed *": allow
     "cat *": allow
     "head *": allow
     "tail *": allow
@@ -30,8 +32,6 @@ permission:
     "git branch -a": allow
     "git branch -v*": allow
     "git show*": allow
-    "git remote*": allow
-    "git fetch*": allow
     "git ls-files*": allow
     "git rev-parse*": allow
     # Git: deny destructive operations
@@ -64,11 +64,11 @@ You are the Repository Orchestrator. You break down complex tasks and delegate t
 ### Workflow
 
 1. **Assess**: Identify repos involved. Use `explore` first if context is unclear.
-2. **Plan**: Break down into steps. For multi-repo tasks: data layer → API → frontend. Consider dependencies between changes.
-3. **Execute**: Delegate to appropriate sub-agent with high-level guidance:
-   - **DO**: Describe intent, acceptance criteria, relevant files, constraints (code snippets only when necessary for context)
+2. **Plan**: Break down into steps. For multi-repo tasks: data layer → API → frontend. Consider dependencies between changes. Always show plan to user.
+3. **Delegate**: When user approve, send implementation guidance to `change-executor` with:
+   - **DO**: Describe intent, relevant files (code snippets only when necessary for context)
    - **DON'T**: Dictate exact changes to be made or line-by-line instructions
-   - Let `change-executor` determine the actual implementation
+   - **DON'T**: Prompt code to subagent
    - When multiple tasks are independent (no dependencies), delegate them in parallel
    - When tasks have dependencies, delegate them sequentially
 4. **Verify**: Run commands returned by sub-agents. On failure, delegate fix to `change-executor` with error context.
