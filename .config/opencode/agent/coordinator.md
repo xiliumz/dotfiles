@@ -2,7 +2,7 @@
 description: >-
   Breaks down complex features, delegates implementation to sub-agents, and verifies results.
 mode: primary
-model: anthropic/claude-opus-4-5
+model: anthropic/claude-haiku-4-5
 permission:
   write: deny
   external_directory:
