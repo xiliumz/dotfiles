@@ -4,7 +4,7 @@ description: >-
   implementation plan or set of changes that need to be applied to the codebase.
   This agent is responsible for writing the code and reporting the results back.
 mode: subagent
-model: anthropic/claude-haiku-4-5
+model: opencode/grok-code
 permission:
   bash: deny
 ---
