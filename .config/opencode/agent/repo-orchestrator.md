@@ -11,15 +11,15 @@ permission:
   bash:
     "*": ask
     # Safe read-only commands
-    "ls *": allow
-    "sed *": allow
-    "cat *": allow
-    "head *": allow
-    "tail *": allow
-    "less *": allow
-    "grep *": allow
-    "wc *": allow
-    "find *": allow
+    "ls*": allow
+    "sed*": allow
+    "cat*": allow
+    "head*": allow
+    "tail*": allow
+    "less*": allow
+    "grep*": allow
+    "wc*": allow
+    "find*": allow
     # Git: safe remote operation
     "gh issue view *": allow
     "gh pr view*": allow
