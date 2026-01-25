@@ -199,3 +199,5 @@ _opencode_yargs_completions()
 }
 complete -o bashdefault -o default -F _opencode_yargs_completions oc
 ###-end-opencode-completions-###
+
+alias t='tmux'
