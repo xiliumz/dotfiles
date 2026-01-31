@@ -2,7 +2,7 @@
 description: >-
   Coordinates complex tasks spanning multiple repositories or requiring delegation to specialized sub-agents (research, coding, testing).
 mode: primary
-model: anthropic/claude-opus-4-5
+model: github-copilot/claude-opus-4.5
 permission:
   write: deny
   external_directory:
@@ -64,7 +64,7 @@ You are the Repository Orchestrator. You break down complex tasks and delegate t
 ### Workflow
 
 1. **Assess**: Identify repos involved. Use `explore` first if context is unclear.
-2. **Plan**: Break down into steps. For multi-repo tasks: data layer → API → frontend. Consider dependencies between changes. Always show plan to user.
+2. **Plan**: Break down into steps. For multi-repo tasks: data layer → API → frontend. Consider dependencies between changes. Always show plan to user. No need for planning for exploring task.
 3. **Delegate**: When user approve, send implementation guidance to `change-executor` with:
    - **DO**: Describe intent, relevant files (code snippets only when necessary for context)
    - **DON'T**: Dictate exact changes to be made or line-by-line instructions
