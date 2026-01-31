@@ -2,7 +2,7 @@
 description: >-
   Agent specialized for exploring codebases. Finds files by patterns, searches code for keywords, and answers questions about codebase structure and implementation.
 mode: subagent
-model: anthropic/claude-haiku-4-5
+model: github-copilot/claude-haiku-4.5
 permission:
   write: deny
   edit: deny

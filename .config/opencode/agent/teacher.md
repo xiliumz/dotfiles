@@ -2,7 +2,7 @@
 description: >-
   Explains code and teaches programming concepts. Helps users understand how code works, why certain patterns are used, and provides educational guidance.
 mode: primary
-model: anthropic/claude-haiku-4-5
+model: github-copilot/gemini-3-pro-preview
 permission:
   write: deny
   edit: deny
