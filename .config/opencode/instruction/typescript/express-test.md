@@ -11,7 +11,7 @@ For general testing rules (mocking, private functions, test case design): @instr
 ```
 tests/
 ├── schemas/              # Zod schema validation tests
-├── repositories/         # Database query tests
+├── repositories/         # Database query tests (mirror src/repositories/ structure)
 ├── controllers/          # HTTP handler tests
 ├── services/             # Business logic tests
 ├── helpers/              # Utility function tests
@@ -63,48 +63,89 @@ describe('CREATE_USER_SCHEMA', () => {
 
 ## Repository Tests
 
+### Test File Location
+
+Repository tests should be placed in `tests/repositories/` mirroring the source structure:
+
+| Source File | Test File |
+|-------------|-----------|
+| `src/repositories/user/find-all.ts` | `tests/repositories/user/find-all.test.ts` |
+| `src/repositories/project/insert.ts` | `tests/repositories/project/insert.test.ts` |
+| `src/repositories/daily-weather-report/upsert.ts` | `tests/repositories/daily-weather-report/upsert.test.ts` |
+
 Repository tests use real database connections via `databaseTest()` helper.
 
 ```typescript
+import { PgClientPool, PgQueryRunner } from '@dayatani/core/types'
 import { databaseTest } from '@dayatani/core/helpers'
-import findAll from '../../../src/repositories/user/find-all'
+import upsert from '../../../src/repositories/daily-weather-report/upsert'
+import { Pool } from 'pg'
 
-describe('find all users', () => {
-  const insertAssociations = async (client: PgClient): Promise<void> => {
+describe('upsert daily weather report', () => {
+  let pgClientPool: PgClientPool
+
+  beforeAll(() => {
+    pgClientPool = new Pool({ connectionString: process.env.DATABASE_URL })
+  })
+
+  afterAll(async () => {
+    await pgClientPool.end()
+  })
+
+  // Use prepareDb function to set up all required dependencies
+  const prepareDb = async (
+    client: PgQueryRunner,
+    projectId: string,
+    iotDeviceId: string,
+  ): Promise<void> => {
     await client.query(`
-      INSERT INTO organization (id, name) VALUES 
-      ('bc37526d-b401-44cf-a9de-7b26dd72f99d', 'Organization')
-    `)
-    // Insert role, user, etc.
+      INSERT INTO project (id, name, location, start_date, end_date)
+      VALUES ($1, 'Test Project', ST_GeographyFromText('POINT(106.8 -6.2)'), '2024-01-01', '2024-12-31')
+    `, [projectId])
+
+    await client.query(`
+      INSERT INTO iot_device (id, name, code_name, location, altitude, nearest_farmer_name, project_id)
+      VALUES ($1, 'Test Device', 'TEST001', ST_GeographyFromText('POINT(106.8 -6.2)'), 100, 'Test Farmer', $2)
+    `, [iotDeviceId, projectId])
   }
 
-  it('should return a list of users', async () => {
-    await databaseTest(async client => {
-      // Prepare
-      await insertAssociations(client)
+  it('should insert new daily weather reports', async () => {
+    const projectId = '11111111-1111-1111-1111-111111111111'
+    const iotDeviceId = '22222222-2222-2222-2222-222222222222'
+    const reportId1 = '33333333-3333-3333-3333-333333333333'
 
-      const baseQuery: IndexUserQueryDto & PaginationConfig = {
-        name_search_term: null,
-        is_active: null,
-        limit: 10,
-        offset: 0,
-      }
+    await databaseTest(async (client) => {
+      // Prepare: Use prepareDb to set up dependencies
+      await prepareDb(client, projectId, iotDeviceId)
 
-      // Execute: Test multiple filter combinations
-      const [
-        resultAll,
-        resultByOrg,
-        resultByName,
-      ] = await Promise.all([
-        findAll(baseQuery, client, null),
-        findAll(baseQuery, client, 'org-id'),
-        findAll({ ...baseQuery, name_search_term: 'Do' }, client, null),
-      ])
+      const reports: DailyWeatherReport[] = [
+        {
+          id: reportId1,
+          iot_device_id: iotDeviceId,
+          date: '2024-09-09',
+          report: { /* ... */ },
+          produced_at: '2024-09-09T12:00:00Z',
+        },
+      ]
 
-      // Assert
-      expect(resultAll).toStrictEqual<ShowSimpleUserDto[]>([/* ... */])
-      expect(resultByName).toStrictEqual<ShowSimpleUserDto[]>([/* ... */])
-    }, null)
+      // Execute
+      await upsert(reports, client)
+
+      // Assert: Verify database state
+      const result = await client.query(`
+        SELECT id, iot_device_id, date::TEXT, report, produced_at
+        FROM daily_weather_report
+      `)
+
+      expect(result.rowCount).toBe(1)
+      expect(result.rows[0]).toStrictEqual({
+        id: reportId1,
+        iot_device_id: iotDeviceId,
+        date: '2024-09-09',
+        report: { /* ... */ },
+        produced_at: '2024-09-09T12:00:00Z',
+      })
+    }, pgClientPool)
   })
 })
 ```
@@ -112,9 +153,12 @@ describe('find all users', () => {
 ### Key Patterns
 
 - Use `databaseTest()` helper for database setup/teardown
+- Create a `prepareDb()` function to set up all required dependencies in one place
 - Insert dependencies in correct order (organization → role → user)
 - Test multiple query variations using `Promise.all()`
 - Use strict type assertions: `toStrictEqual<DtoType>()`
+- Reuse `prepareDb` across multiple test cases with different parameters
+- Use `beforeAll`/`afterAll` to manage the database connection pool
 - No jest.mock() needed - real database calls
 
 ---
