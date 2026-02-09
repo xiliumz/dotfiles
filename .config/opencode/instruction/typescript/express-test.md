@@ -92,12 +92,12 @@ describe('upsert daily weather report', () => {
     await pgClientPool.end()
   })
 
+  // Define test data in describe scope to reuse across tests
+  const projectId = '11111111-1111-1111-1111-111111111111'
+  const iotDeviceId = '22222222-2222-2222-2222-222222222222'
+
   // Use prepareDb function to set up all required dependencies
-  const prepareDb = async (
-    client: PgQueryRunner,
-    projectId: string,
-    iotDeviceId: string,
-  ): Promise<void> => {
+  const prepareDb = async (client: PgQueryRunner): Promise<void> => {
     await client.query(`
       INSERT INTO project (id, name, location, start_date, end_date)
       VALUES ($1, 'Test Project', ST_GeographyFromText('POINT(106.8 -6.2)'), '2024-01-01', '2024-12-31')
@@ -110,13 +110,11 @@ describe('upsert daily weather report', () => {
   }
 
   it('should insert new daily weather reports', async () => {
-    const projectId = '11111111-1111-1111-1111-111111111111'
-    const iotDeviceId = '22222222-2222-2222-2222-222222222222'
     const reportId1 = '33333333-3333-3333-3333-333333333333'
 
     await databaseTest(async (client) => {
       // Prepare: Use prepareDb to set up dependencies
-      await prepareDb(client, projectId, iotDeviceId)
+      await prepareDb(client)
 
       const reports: DailyWeatherReport[] = [
         {
@@ -153,11 +151,11 @@ describe('upsert daily weather report', () => {
 ### Key Patterns
 
 - Use `databaseTest()` helper for database setup/teardown
-- Create a `prepareDb()` function to set up all required dependencies in one place
+- Create a `prepareDb()` function that only accepts `client` parameter
+- Define test data (IDs, constants) in the `describe` scope to reuse across multiple test cases
 - Insert dependencies in correct order (organization → role → user)
 - Test multiple query variations using `Promise.all()`
 - Use strict type assertions: `toStrictEqual<DtoType>()`
-- Reuse `prepareDb` across multiple test cases with different parameters
 - Use `beforeAll`/`afterAll` to manage the database connection pool
 - No jest.mock() needed - real database calls
 
