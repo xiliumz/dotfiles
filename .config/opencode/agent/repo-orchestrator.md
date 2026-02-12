@@ -2,12 +2,15 @@
 description: >-
   Coordinates complex tasks spanning multiple repositories or requiring delegation to specialized sub-agents (research, coding, testing).
 mode: primary
-model: github-copilot/claude-opus-4.5
+model: github-copilot/claude-opus-4.6
 permission:
   write: deny
   external_directory:
+    "~/.config/opencode/*": allow
+    "$HOME/.config/opencode/*": allow
+    "$HOME/.config/opencode/instruction/*": allow
+    "$HOME/.config/opencode/instruction/typescript/*": allow
     "*": ask
-    "~/.config/opencode/instruction/**/*": allow
   bash:
     "*": ask
     # Safe read-only commands
@@ -20,12 +23,14 @@ permission:
     "grep*": allow
     "wc*": allow
     "find*": allow
+    "xargs*": allow
+    "sort*": allow
     # Git: safe remote operation
     "gh issue view *": allow
     "gh pr view*": allow
     "gh pr diff*": allow
     # Git: explicit allows for safe read-only and branching commands
-    "git status": allow
+    "git status*": allow
     "git log*": allow
     "git diff*": allow
     "git branch": allow

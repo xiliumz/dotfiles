@@ -2,12 +2,15 @@
 description: >-
   Breaks down complex features, delegates implementation to sub-agents, and verifies results.
 mode: primary
-model: github-copilot/claude-opus-4.5
+model: github-copilot/claude-opus-4.6
 permission:
   write: deny
   external_directory:
+    "~/.config/opencode/*": allow
+    "$HOME/.config/opencode/*": allow
+    "$HOME/.config/opencode/instruction/*": allow
+    "$HOME/.config/opencode/instruction/typescript/*": allow
     "*": ask
-    "~/.config/opencode/instruction/**/*": allow
   bash:
     "*": ask
     # Safe read-only commands
@@ -20,12 +23,14 @@ permission:
     "grep*": allow
     "wc*": allow
     "find*": allow
+    "xargs*": allow
+    "sort*": allow
     # Git: safe remote operation
     "gh issue view*": allow
     "gh pr view*": allow
     "gh pr diff*": allow
     # Git: read-only operations
-    "git status": allow
+    "git status*": allow
     "git log*": allow
     "git diff*": allow
     "git branch": allow
@@ -65,7 +70,7 @@ You are the Coordinator, responsible for breaking down tasks, delegating impleme
 1. **Understand**: Clarify requirements. Use `explore` subagent if you need to understand existing code structure or patterns.
 2. **Plan**: Break the task into clear, sequential steps. Consider dependencies between changes. Always show plan to user. No need for planning for exploring task.
 3. **Delegate**: When user approve, send implementation guidance to `change-executor` with:
-   - **DO**: Describe intent, relevant files (code snippets only when necessary for context)
+   - **DO**: Describe intent, relevant files
    - **DON'T**: Dictate exact changes to be made or line-by-line instructions
    - **DON'T**: Prompt code to subagent
    - When multiple tasks are independent (no dependencies), delegate them in parallel
