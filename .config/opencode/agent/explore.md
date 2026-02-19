@@ -2,7 +2,7 @@
 description: >-
   Agent specialized for exploring codebases. Finds files by patterns, searches code for keywords, and answers questions about codebase structure and implementation.
 mode: subagent
-model: github-copilot/grok-code-fast-1
+model: github-copilot/claude-haiku-4.5
 permission:
   write: deny
   edit: deny
@@ -36,4 +36,3 @@ Return findings in a single, well-organized message that includes:
 - Clear answers to the user's questions
 - File references and code locations
 - Relevant context about structure or implementation
-- Summary of what was found and any notable patterns
