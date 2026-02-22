@@ -1,8 +1,12 @@
-export default async ({ $ }) => {
+export default async ({ $, client }) => {
   return {
     event: async ({ event }) => {
       if (event.type === "session.idle") {
-        await $`notify-send "OpenCode finished" "Agent completed - check response"`;
+        const session = await client.session.get({
+          path: { id: event.properties.sessionID }
+        });
+        // Only notify if this is a primary session (no parent)
+        if (!session.data.parentID) await $`notify-send "OpenCode finished" "Agent completed - check response"`;
       }
     }
   };
