@@ -1,7 +1,5 @@
 ---
 description: Create commits
-agent: build
-model: opencode/grok-code
 ---
 Create commits following these rules
 
@@ -14,5 +12,3 @@ Create commits following these rules
 - Utilize `git` command
 - Don't commit . directory and files inside it
 - Don't commit `AGENTS.md`
-
-!`git status`
