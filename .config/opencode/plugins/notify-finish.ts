@@ -9,6 +9,8 @@ export const notify: Plugin =  async ({ $, client }) => {
         });
         // Only notify if this is a primary session (no parent)
         if (!session.data.parentID) await $`notify-send "OpenCode finished" "Agent completed - check response"`;
+      } else if (event.type === "permission.asked") {
+        await $`notify-send "OpenCode Permission" "Agent is asking for permission - check response"`;
       }
     }
   };
