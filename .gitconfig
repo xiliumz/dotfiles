@@ -1,0 +1,33 @@
+[user]
+    name = Azaria Beryl
+    email = 88883166+xiliumz@users.noreply.github.com
+
+[credential]
+    helper = store
+
+[core]
+    editor = nvim
+    pager = delta
+
+[init]
+    defaultBranch = main
+
+[interactive]
+    diffFilter = delta --color-only
+
+[diff]
+    tool = nvimdiff
+
+[merge]
+    conflictStyle = zdiff3
+
+[rerere]
+    enabled = true
+
+[delta]
+    navigate = true
+    dark = true
+    line-numbers = true
+
+[include]
+    path = ~/.gitconfig.local
