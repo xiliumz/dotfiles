@@ -175,3 +175,11 @@ alias cdpi='cd ~/.pi/agent/'
 alias t='tmux'
 
 . "$HOME/.local/bin/env"
+
+# pnpm
+export PNPM_HOME="/home/dayatani/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
