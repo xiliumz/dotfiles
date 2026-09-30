@@ -1,44 +1,97 @@
 ### 🧰 Setup
 
 ```bash
-# 1. Create a bare repo to store version control info
-git init --bare $HOME/.dotfiles
+# 1. Create a bare Git repository for the dotfiles metadata
+git init --bare "$HOME/.dotfiles"
 
-# 2. Create a convenient alias for using this repo
-echo "alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'" >> ~/.bashrc
-source ~/.bashrc  # or ~/.zshrc
+# 2. Add the dot alias permanently
+echo "alias dot='/usr/bin/git --git-dir=\$HOME/.dotfiles/ --work-tree=\$HOME'" >> ~/.bashrc
+
+# 3. Reload the shell configuration
+source ~/.bashrc
 ```
 
-Now you can use the alias `dotfiles` like a normal git command:
+For Zsh, use `~/.zshrc` instead of `~/.bashrc`.
+
+You can now use `dot` like a normal Git command:
 
 ```bash
-dotfiles status
-dotfiles add .bashrc .zshrc .config/nvim
-dotfiles commit -m "Initial commit"
-dotfiles remote add origin https://github.com/xiliumz/dotfiles.git
-dotfiles push -u origin main
+dot status
+dot add .bashrc .zshrc
+dot commit -m "Initial commit"
+
+dot remote add origin git@github.com:xiliumz/dotfiles.git
+dot push -u origin main
 ```
 
 ---
 
-### 💡 Important Step
+### 💡 Hide Untracked Files
 
-Hide untracked files from your whole home directory (otherwise Git will list everything in your home):
+Because the working tree is your entire home directory, Git would otherwise show every untracked file in `$HOME`.
 
 ```bash
-dotfiles config --local status.showUntrackedFiles no
+dot config --local status.showUntrackedFiles no
 ```
 
 ---
 
-### 📦 On a New Machine
+### 📦 Adding a Repository as a Submodule
 
-You can restore your setup by doing:
+For configuration that lives in its own Git repository, such as Neovim:
 
 ```bash
-git clone --bare https://github.com/xiliumz/dotfiles.git $HOME/.dotfiles
-alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-dotfiles checkout
-dotfiles config --local status.showUntrackedFiles no
+dot submodule add git@github.com:xiliumz/nvim.git .config/nvim
+dot commit -m "Add nvim submodule"
+dot push
 ```
 
+The parent dotfiles repository stores the exact commit of the Neovim repository that should be used.
+
+---
+
+### 💻 Setup on a New Machine
+
+```bash
+# Clone the bare dotfiles repository
+git clone --bare git@github.com:xiliumz/dotfiles.git "$HOME/.dotfiles"
+
+# Make the alias available in the current shell
+alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+# Check out dotfiles into $HOME
+dot checkout
+
+# Hide unrelated files in $HOME from git status
+dot config --local status.showUntrackedFiles no
+
+# Restore submodules such as ~/.config/nvim
+dot submodule update --init --recursive
+```
+
+The bare repository lives at:
+
+```text
+~/.dotfiles
+```
+
+while the actual tracked files are checked out directly into `$HOME`.
+
+For example:
+
+```text
+~/.dotfiles/          # Git metadata
+~/.bashrc             # tracked dotfile
+~/.config/nvim/       # nvim submodule
+```
+
+---
+
+### 🔄 Updating an Existing Machine
+
+Pull the latest dotfiles and update submodules:
+
+```bash
+dot pull --recurse-submodules
+dot submodule update --init --recursive
+```
