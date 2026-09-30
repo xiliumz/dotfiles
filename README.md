@@ -54,18 +54,18 @@ The parent dotfiles repository stores the exact commit of the Neovim repository 
 
 ```bash
 # Clone the bare dotfiles repository
-git clone --bare git@github.com:xiliumz/dotfiles.git "$HOME/.dotfiles"
+git clone --bare https://github.com/xiliumz/dotfiles.git "$HOME/.dotfiles"
 
-# Make the alias available in the current shell
+# Make dot available in this shell
 alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 # Check out dotfiles into $HOME
 dot checkout
 
-# Hide unrelated files in $HOME from git status
+# Hide unrelated files
 dot config --local status.showUntrackedFiles no
 
-# Restore submodules such as ~/.config/nvim
+# Restore submodules
 dot submodule update --init --recursive
 ```
 
