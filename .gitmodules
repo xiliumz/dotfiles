@@ -4,3 +4,6 @@
 [submodule ".pi/agent"]
 	path = .pi/agent
 	url = git@github.com:xiliumz/pi-config
+[submodule ".tmux/plugins/tpm"]
+	path = .tmux/plugins/tpm
+	url = https://github.com/tmux-plugins/tpm.git
