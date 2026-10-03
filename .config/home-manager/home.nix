@@ -47,6 +47,8 @@
     nixfmt
 
     # Mason utilities
+    tree-sitter
+    gcc
     curl
     unzip
     gnutar
