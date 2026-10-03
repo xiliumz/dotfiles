@@ -135,6 +135,12 @@ if ! shopt -oq posix; then
   fi
 fi
 
+if ! command -v nix >/dev/null 2>&1; then
+  echo "Nix is not installed. Install Nix before applying this setup."
+elif ! command -v home-manager >/dev/null 2>&1; then
+  echo "Home Manager is not installed. Run the Home Manager bootstrap."
+fi
+
 alias dot='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 # Additional dot aliases
