@@ -28,6 +28,12 @@ fi
 
 . "$HOME/.local/bin/env"
 
+
+# add nix bin
+if [ -d "$HOME/.nix-profile/bin" ]; then
+    PATH="$HOME/.nix-profile/bin:$PATH"
+fi
+
 # nvm for login shells / systemd user services (not only interactive .bashrc)
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
@@ -39,8 +45,3 @@ case ":$PATH:" in
   *":$PNPM_HOME/bin:"*) ;;
   *) export PATH="$PNPM_HOME/bin:$PATH" ;;
 esac
-
-# add nix bin
-if [ -d "$HOME/.nix-profile/bin" ]; then
-    PATH="$HOME/.nix-profile/bin:$PATH"
-fi
