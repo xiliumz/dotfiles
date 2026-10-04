@@ -174,4 +174,4 @@ alias cdpi='cd ~/.pi/agent/'
 
 alias t='tmux'
 
-. "$HOME/.local/bin/env"
+alias switch='home-manager switch --flake ~/.config/home-manager#default'
