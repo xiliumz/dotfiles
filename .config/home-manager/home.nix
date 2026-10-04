@@ -40,6 +40,7 @@
     tmux
     nodejs_24
     nixfmt
+    kitty.terminfo
 
     # Mason utilities
     tree-sitter
@@ -83,6 +84,7 @@
   #
   home.sessionVariables = {
     # EDITOR = "emacs";
+    TERMINFO_DIRS = "${pkgs.kitty.terminfo}/share/terminfo:/usr/share/terminfo";
   };
 
   # Let Home Manager install and manage itself.
