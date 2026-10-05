@@ -25,6 +25,10 @@ fi
 if [ -d "$HOME/.nix-profile/bin" ]; then
     PATH="$HOME/.nix-profile/bin:$PATH"
 fi
+# if Home Manager generated its session-variable script, load it into the current shell.
+if [ -f "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
+    . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+fi
 
 # nvm for login shells / systemd user services (not only interactive .bashrc)
 export NVM_DIR="$HOME/.nvm"
