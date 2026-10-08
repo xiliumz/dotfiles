@@ -175,3 +175,7 @@ alias cdpi='cd ~/.pi/agent/'
 alias t='tmux'
 
 alias switch='home-manager switch --flake ~/.config/home-manager#default'
+
+develop() {
+   nix develop "path:${1:-.}"
+}
