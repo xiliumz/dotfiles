@@ -49,6 +49,8 @@
     unzip
     gnutar
     gzip
+    rustc
+    cargo
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -85,6 +87,7 @@
   home.sessionVariables = {
     # EDITOR = "emacs";
     TERMINFO_DIRS = "${pkgs.kitty.terminfo}/share/terminfo:/usr/share/terminfo";
+    RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
   };
 
   # Let Home Manager install and manage itself.
