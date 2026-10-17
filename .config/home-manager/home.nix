@@ -1,6 +1,8 @@
 { config, pkgs, ... }:
 
 {
+  imports = [ ./bash.nix ];
+
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
@@ -88,6 +90,7 @@
     # EDITOR = "emacs";
     TERMINFO_DIRS = "${pkgs.kitty.terminfo}/share/terminfo:/usr/share/terminfo";
     RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
+    NIX_BUILD_SHELL = "${pkgs.bashInteractive}/bin/bash";
   };
 
   # Let Home Manager install and manage itself.
