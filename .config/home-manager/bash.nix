@@ -1,10 +1,8 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   home.sessionVariables = {
     EDITOR = "nvim";
-    NVM_DIR = "${config.home.homeDirectory}/.nvm";
-    PNPM_HOME = "${config.home.homeDirectory}/.local/share/pnpm";
   };
 
   programs.bash = {
@@ -64,19 +62,6 @@
       if [ -d "$HOME/.nix-profile/bin" ]; then
         PATH="$HOME/.nix-profile/bin:$PATH"
       fi
-
-      # Home Manager already loads its session variables and sources .bashrc.
-      if [ -s "$NVM_DIR/nvm.sh" ]; then
-        . "$NVM_DIR/nvm.sh"
-      fi
-      if [ -n "''${BASH_VERSION:-}" ] && [ -s "$NVM_DIR/bash_completion" ]; then
-        . "$NVM_DIR/bash_completion"
-      fi
-
-      case ":$PATH:" in
-        *":$PNPM_HOME/bin:"*) ;;
-        *) export PATH="$PNPM_HOME/bin:$PATH" ;;
-      esac
     '';
 
     initExtra = ''

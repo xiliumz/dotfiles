@@ -1,11 +1,26 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
+let
+  npmPrefix = "${config.home.homeDirectory}/.local/share/npm";
+in
 {
   imports = [ ./bash.nix ];
 
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
+  };
+
+  programs.pnpm.enable = true;
+  programs.npm = {
+    enable = true;
+    package = pkgs.nodejs_24;
+    settings = { }; # Keep the private ~/.npmrc unmanaged.
   };
 
   # This value determines the Home Manager release that your configuration is
@@ -40,7 +55,6 @@
     # '')
     neovim
     tmux
-    nodejs_24
     nixfmt
     kitty.terminfo
 
@@ -86,7 +100,14 @@
   #
   #  /etc/profiles/per-user/user/etc/profile.d/hm-session-vars.sh
   #
+  # Keep npm's writable global packages outside the immutable Nix store.
+  home.sessionPath = [ "${npmPrefix}/bin" ];
+  home.activation.createNpmGlobalDirectory = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run mkdir -p ${lib.escapeShellArg "${npmPrefix}/lib/node_modules"}
+  '';
+
   home.sessionVariables = {
+    NPM_CONFIG_PREFIX = npmPrefix;
     # EDITOR = "emacs";
     TERMINFO_DIRS = "${pkgs.kitty.terminfo}/share/terminfo:/usr/share/terminfo";
     RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
