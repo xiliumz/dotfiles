@@ -46,6 +46,7 @@
       cdnvim = "cd ~/.config/nvim";
       cdpi = "cd ~/.pi/agent/";
       t = "tmux";
+      tas = "tmux new -As";
       switch = "home-manager switch --flake ~/.config/home-manager#default";
     };
 
