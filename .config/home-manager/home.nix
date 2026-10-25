@@ -57,6 +57,7 @@ in
     tmux
     nixfmt
     kitty.terminfo
+    (callPackage ./packages/cli-todo.nix { })
 
     # Mason utilities
     tree-sitter
