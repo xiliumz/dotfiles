@@ -57,6 +57,7 @@ in
     tmux
     nixfmt
     kitty.terminfo
+    opencode
     (callPackage ./packages/cli-todo.nix { })
 
     # Mason utilities
