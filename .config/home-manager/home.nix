@@ -19,7 +19,7 @@ in
   programs.pnpm.enable = true;
   programs.npm = {
     enable = true;
-    package = pkgs.nodejs_24;
+    package = pkgs.nodejs_26;
     settings = { }; # Keep the private ~/.npmrc unmanaged.
   };
 
