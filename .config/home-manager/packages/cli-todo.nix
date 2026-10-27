@@ -4,29 +4,29 @@
   lib,
 }:
 let
-  version = "0.5.0";
+  version = "0.6.0";
 
   platforms = {
-    "x86_64-linux" = {
-      arch = "x86_64-unknown-linux-musl";
-      sha256 = "1cgb1svk99zz3fhrxbhnwdc5p5ypj50fvg4cdmp0m562pkw99ap5";
+    "aarch64-darwin" = {
+      arch = "aarch64-apple-darwin";
+      sha256 = "1nvbzvfm40hbzcxrmfyj2kh4i86jxxlc237kd7vf1kjw948mqhwq";
     };
     "aarch64-linux" = {
       arch = "aarch64-unknown-linux-musl";
-      sha256 = "0mq1l75w4j0gqbf7334nyxm6lsisavvas29gi1m5bih3a6kzh5qx";
+      sha256 = "0s9521kr2plfx7xk5nzqsk11yy9i7m08iwbbxzc8lq59lihi328j";
     };
     "x86_64-darwin" = {
       arch = "x86_64-apple-darwin";
-      sha256 = "1nw73b5cz1sgs69lsp6xbypiyd31fi0s2bx4ps3j3ks6nvlc685y";
+      sha256 = "1vwcwg4jjvq09s02gv7z0g5r469wq2ssfacq4sr8m4f4cxbrw85b";
     };
-    "aarch64-darwin" = {
-      arch = "aarch64-apple-darwin";
-      sha256 = "179bkmx18xhicxaxq5gj9p55c6sm7z9s3c1kcda8mnzv7a8sasbz";
+    "x86_64-linux" = {
+      arch = "x86_64-unknown-linux-musl";
+      sha256 = "06b9g4ygfd0k5wcw964m87r9ayvpdiqdxrnxg511p8xb73wr6fpm";
     };
   };
-
   platform = platforms.${stdenvNoCC.hostPlatform.system} or (throw "unsupported system");
 in
+
 stdenvNoCC.mkDerivation {
   pname = "cli-todo";
   inherit version;
