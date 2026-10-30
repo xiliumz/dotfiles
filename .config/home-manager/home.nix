@@ -16,7 +16,7 @@ in
     nix-direnv.enable = true;
   };
 
-  programs.pnpm.enable = true;
+  # programs.pnpm.enable = true;
   programs.npm = {
     enable = true;
     package = pkgs.nodejs_26;
@@ -53,14 +53,14 @@ in
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
-    neovim
     tmux
     nixfmt
     kitty.terminfo
     opencode
     (callPackage ./packages/cli-todo.nix { })
 
-    # Mason utilities
+    # Nvim utilities
+    neovim
     tree-sitter
     gcc
     curl
@@ -69,6 +69,7 @@ in
     gzip
     rustc
     cargo
+    corepack
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
