@@ -57,6 +57,7 @@ in
     nixfmt
     kitty.terminfo
     opencode
+    pi-coding-agent
     (callPackage ./packages/cli-todo.nix { })
 
     # Nvim utilities
