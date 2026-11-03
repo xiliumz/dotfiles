@@ -58,6 +58,7 @@ in
     kitty.terminfo
     opencode
     pi-coding-agent
+    sshfs
     (callPackage ./packages/cli-todo.nix { })
 
     # Nvim utilities
