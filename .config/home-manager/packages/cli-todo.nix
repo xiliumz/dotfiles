@@ -4,24 +4,24 @@
   lib,
 }:
 let
-  version = "0.11.1";
+  version = "0.14.0";
 
   platforms = {
     "aarch64-darwin" = {
       arch = "aarch64-apple-darwin";
-      sha256 = "0qg0lghlagf1cn6lmilaj70xbi1k8ky12p9h0bk2npvsjdnxrcsw";
+      sha256 = "0mclchzmdmymcfgn8f0swgzrnxrfjxyar11wlj2c1kb1zscfmqfi";
     };
     "aarch64-linux" = {
       arch = "aarch64-unknown-linux-musl";
-      sha256 = "06hwb77bq17w1ljnragixjsq3id55xm8wsxlvjdwrhl33x65v84b";
+      sha256 = "0rg23qqw6cs3ycldjjxisq5ja7r3v024zd06f3qpf3hyd0qgp085";
     };
     "x86_64-darwin" = {
       arch = "x86_64-apple-darwin";
-      sha256 = "0glvcs50i5nfapr319nc3vgwfwkjw88nm716d9lh7i8gy426n9cr";
+      sha256 = "1z333cpg4ba2bvqrs60kpgq5rl1civli8ilrm9s0lc33fk93si4j";
     };
     "x86_64-linux" = {
       arch = "x86_64-unknown-linux-musl";
-      sha256 = "0jd63sb3sc10dl62qngizlddaf4gs8bpcvy3ns3md49zxfimm1hp";
+      sha256 = "1nfldsrnyx6yvzzpzd0jl1aqsv9wbq3ckw3dpal4qm2w5cfw5kzk";
     };
   };
   platform = platforms.${stdenvNoCC.hostPlatform.system} or (throw "unsupported system");
