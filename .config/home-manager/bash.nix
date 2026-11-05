@@ -48,6 +48,7 @@
       t = "tmux";
       tas = "tmux new -As";
       switch = "home-manager switch --flake ~/.config/home-manager#default";
+      home = "cd ~/.config/home-manager/"
     };
 
     profileExtra = ''
