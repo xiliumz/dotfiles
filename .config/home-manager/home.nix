@@ -59,6 +59,7 @@ in
     opencode
     pi-coding-agent
     sshfs
+    gh
     (callPackage ./packages/cli-todo.nix { })
 
     # Nvim utilities
