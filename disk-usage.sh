@@ -1,5 +1,6 @@
 #!/bin/sh
-# Report disk usage; --clean removes only the allowlisted caches below.
+# Report disk usage; --clean removes only the allowlisted caches below
+# and prunes unused packages from the pnpm store.
 set -eu
 
 usage() {
@@ -41,7 +42,11 @@ set -- \
     "$home/.cache/gnome-software" \
     "$home/.cache/pnpm" \
     "$home/.cache/uv" \
-    "$home/.npm/_npx"
+    "$home/.npm/_npx" \
+    "$home/.cache/go-build" \
+    "$home/.cache/node-gyp" \
+    "$home/.config/Cursor/CachedData" \
+    "$home/.config/Code/CachedExtensionVSIXs"
 
 printf '\nDisk space:\n'
 df -h "$home"
@@ -55,11 +60,12 @@ for path do
     fi
 done
 
-printf '\nBefore cleanup: close Brave and Software Center; finish package installs.\n'
+printf '\nBefore cleanup: close Brave, Software Center, Cursor and VS Code; finish package installs and builds.\n'
 
 if [ "$mode" = clean ]; then
     # Refuse redirected parent directories; do not follow them outside the allowlist.
-    for parent in "$home/.npm" "$home/.cache"; do
+    for parent in "$home/.npm" "$home/.cache" "$home/.config" \
+        "$home/.config/Cursor" "$home/.config/Code"; do
         if [ -L "$parent" ]; then
             printf 'Refusing cleanup: parent is a symlink: %s\n' "$parent" >&2
             exit 1
@@ -67,12 +73,17 @@ if [ "$mode" = clean ]; then
     done
     printf '\nRemoving only the listed caches...\n'
     rm -rf -- "$@"
+    if command -v pnpm >/dev/null 2>&1; then
+        printf '\nPruning unused packages from the pnpm store...\n'
+        # A failed prune should not hide the final disk report.
+        pnpm store prune || printf 'pnpm store prune failed; continuing.\n' >&2
+    fi
     printf '\nCleanup complete. Disk space now:\n'
     df -h "$home"
 else
     printf '\nLargest home entries (including hidden folders; total is first):\n'
     # Ignore unreadable directories; du still reports the accessible entries.
     du -xh --max-depth=1 "$home" 2>/dev/null | sort -hr | head -n 15
-    printf '\nTo delete ONLY the allowlisted caches above, run:\n'
+    printf '\nTo delete ONLY the allowlisted caches above and prune the pnpm store, run:\n'
     printf '  %s --clean\n' "$0"
 fi
