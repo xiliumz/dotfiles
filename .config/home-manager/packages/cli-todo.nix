@@ -4,24 +4,24 @@
   lib,
 }:
 let
-  version = "0.14.0";
+  version = "0.26.0";
 
   platforms = {
     "aarch64-darwin" = {
       arch = "aarch64-apple-darwin";
-      sha256 = "0mclchzmdmymcfgn8f0swgzrnxrfjxyar11wlj2c1kb1zscfmqfi";
+      sha256 = "19bjgjhpffw91pyhyawipai21vl20lcf6d7hkfrk21n702x2ca2b";
     };
     "aarch64-linux" = {
       arch = "aarch64-unknown-linux-musl";
-      sha256 = "0rg23qqw6cs3ycldjjxisq5ja7r3v024zd06f3qpf3hyd0qgp085";
+      sha256 = "0r4xfjg8q4lknrj9q7g3d21q90vq1b28md9hkwr848705p86g4xs";
     };
     "x86_64-darwin" = {
       arch = "x86_64-apple-darwin";
-      sha256 = "1z333cpg4ba2bvqrs60kpgq5rl1civli8ilrm9s0lc33fk93si4j";
+      sha256 = "073n3l2qpgvwlvxsm5bs5yca4k42rv3q9l7aqw5rx2l4dx5r1awg";
     };
     "x86_64-linux" = {
       arch = "x86_64-unknown-linux-musl";
-      sha256 = "1nfldsrnyx6yvzzpzd0jl1aqsv9wbq3ckw3dpal4qm2w5cfw5kzk";
+      sha256 = "164iyrv535546i2giv53vil8g553mfgv1sbkrakxpkxcv9gbj5ax";
     };
   };
   platform = platforms.${stdenvNoCC.hostPlatform.system} or (throw "unsupported system");
