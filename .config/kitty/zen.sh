@@ -1,15 +1,54 @@
 #!/bin/sh
+# Zen mode: puts two empty black "spacer" windows on the left and right of the
+# focused window. The main window keeps its own background color and opacity.
 
-STATE="${XDG_RUNTIME_DIR:-/tmp}/kitty-zen-mode"
+SPACER_PCT=12   # width of each side spacer, in % of the tab width
+STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}"
 
-if [ -f "$STATE" ]; then
-    kitten @ set-spacing margin=default padding=default
-    rm "$STATE"
+# Read the focused tab: its id, active window, layout, and any existing spacers.
+eval "$(kitten @ ls | python3 -c '
+import json, sys
+data = json.load(sys.stdin)
+osw = next((o for o in data if o.get("is_focused")), None) or next(o for o in data if o.get("is_active"))
+tab = next(t for t in osw["tabs"] if t.get("is_active"))
+win = next(w for w in tab["windows"] if w.get("is_active"))
+spacers = [str(w["id"]) for w in tab["windows"] if w.get("user_vars", {}).get("zen_spacer")]
+print("TAB=%s WIN=%s LAYOUT=%s SPACERS=\"%s\"" % (tab["id"], win["id"], tab["layout"], " ".join(spacers)))
+')"
+
+STATE="$STATE_DIR/kitty-zen-tab-$TAB"
+
+if [ -n "$SPACERS" ]; then
+    # --- Zen off ---
+    for id in $SPACERS; do
+        kitten @ close-window --ignore-no-match --match "id:$id"
+    done
+    if [ -f "$STATE" ]; then
+        . "$STATE"   # sets PREV_LAYOUT and MAIN
+        kitten @ set-spacing --match "id:$MAIN" padding=default
+        kitten @ goto-layout --match "id:$TAB" "$PREV_LAYOUT"
+        rm -f "$STATE"
+    fi
 else
-    kitten @ set-spacing \
-        margin-h=140 \
-        # margin-v=15 \
-        padding-h=12 \
-        padding-v=8
-    touch "$STATE"
+    # --- Zen on ---
+    printf 'PREV_LAYOUT=%s\nMAIN=%s\n' "$LAYOUT" "$WIN" > "$STATE"
+
+    kitten @ goto-layout --match "id:$TAB" splits
+
+    # Empty, black, cursorless window that ignores typing.
+    spacer() {
+        kitten @ launch --match "id:$TAB" --next-to "id:$WIN" \
+            --location="$1" --bias="$2" \
+            --keep-focus --var zen_spacer=1 --title " " \
+            --color background=#000000 \
+            sh -c 'stty -echo -icanon 2>/dev/null; printf "\033[?25l"; exec sleep infinity' \
+            >/dev/null
+    }
+
+    # Right spacer takes SPACER_PCT% of the full width.
+    spacer vsplit "$SPACER_PCT"
+    # Left spacer splits what's left, so scale its bias to get the same width.
+    spacer before $(( SPACER_PCT * 100 / (100 - SPACER_PCT) ))
+
+    kitten @ set-spacing --match "id:$WIN" padding-h=12 padding-v=8
 fi
