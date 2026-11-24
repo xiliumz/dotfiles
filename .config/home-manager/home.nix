@@ -60,6 +60,7 @@ in
     pi-coding-agent
     sshfs
     gh
+    ripgrep
     (callPackage ./packages/cli-todo.nix { })
 
     # Nvim utilities
@@ -118,6 +119,8 @@ in
     TERMINFO_DIRS = "${pkgs.kitty.terminfo}/share/terminfo:/usr/share/terminfo";
     RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
     NIX_BUILD_SHELL = "${pkgs.bashInteractive}/bin/bash";
+    # Rootless Docker socket, for tools that ignore `docker context`.
+    DOCKER_HOST = "unix:///run/user/1000/docker.sock";
   };
 
   # Let Home Manager install and manage itself.
