@@ -135,6 +135,27 @@
       develop() {
         nix develop "path:''${1:-.}"
       }
+
+      # Dotfiles update check. Shows what the last fetch found (local, instant),
+      # then refetches in the background at most every 6 hours. Never pulls.
+      _dotfiles_check() {
+        local gd="$HOME/.dotfiles" n branch
+        [ -d "$gd" ] || return
+        n=$(git --git-dir="$gd" rev-list --count HEAD..origin/main 2>/dev/null) || return
+        if [ "$n" -gt 0 ]; then
+          branch=$(git --git-dir="$gd" branch --show-current 2>/dev/null)
+          if [ "$branch" = main ]; then
+            echo "dotfiles: $n new commit(s) on GitHub. Run: dpl && switch"
+          else
+            echo "dotfiles: $n new commit(s) on origin/main (you're on branch '$branch')."
+          fi
+        fi
+        if [ -z "$(find "$gd/FETCH_HEAD" -mmin -360 2>/dev/null)" ]; then
+          (GIT_TERMINAL_PROMPT=0 timeout 30 git --git-dir="$gd" fetch -q origin >/dev/null 2>&1 &)
+        fi
+      }
+      _dotfiles_check
+      unset -f _dotfiles_check
     '';
   };
 }
